@@ -1,0 +1,77 @@
+import Stochstic
+import time
+
+def Interval(interval) :
+    if interval == '3m' : 
+        stoch = Stochstic.stochastic_3()[0]
+        stoch_K = Stochstic.stochastic_3()[1]
+        stoch_D = Stochstic.stochastic_3()[2]
+    elif interval == '5m' : 
+        stoch = Stochstic.stochastic_5()[0]
+        time.sleep(1)
+        stoch_K = Stochstic.stochastic_5()[1]
+        time.sleep(1)
+        stoch_D = Stochstic.stochastic_5()[2]
+        time.sleep(1)
+    elif interval == '15m' : 
+        stoch = Stochstic.stochastic_15()[0]
+        time.sleep(1)
+        stoch_K = Stochstic.stochastic_15()[1]
+        time.sleep(1)
+        stoch_D = Stochstic.stochastic_15()[2]
+        time.sleep(1)
+    elif interval == '30m' : 
+        stoch = Stochstic.stochastic_30()[0]
+        time.sleep(1)
+        stoch_K = Stochstic.stochastic_30()[1]
+        time.sleep(1)
+        stoch_D = Stochstic.stochastic_30()[2]
+        time.sleep(1)
+    elif interval == '60m' : 
+        stoch = Stochstic.stochastic_60()[0]
+        time.sleep(1)
+        stoch_K = Stochstic.stochastic_60()[1]
+        time.sleep(1)
+        stoch_D = Stochstic.stochastic_60()[2]
+        time.sleep(1)
+    elif interval == '240m' : 
+        stoch = Stochstic.stochastic_240()[0]
+        time.sleep(1)
+        stoch_K = Stochstic.stochastic_240()[1]
+        time.sleep(1)
+        stoch_D = Stochstic.stochastic_240()[2]
+        time.sleep(1)
+    elif interval == '1d' : 
+        stoch = Stochstic.stochastic_day()[0]
+        time.sleep(1)
+        stoch_K = Stochstic.stochastic_day()[1]
+        time.sleep(1)
+        stoch_D = Stochstic.stochastic_day()[2]
+        time.sleep(1)
+    elif interval == '1w' : 
+        stoch = Stochstic.stochastic_week()[0]
+        time.sleep(1)
+        stoch_K = Stochstic.stochastic_week()[1]
+        time.sleep(1)
+        stoch_D = Stochstic.stochastic_week()[2]
+        time.sleep(1) 
+    return stoch,stoch_K,stoch_D   
+    
+def url(interval) :
+    if interval == '3m' : 
+        url = "https://api.upbit.com/v1/candles/minutes/3"
+    elif interval == '5m' : 
+        url = "https://api.upbit.com/v1/candles/minutes/5"
+    elif interval == '15m' : 
+        url = "https://api.upbit.com/v1/candles/minutes/15"
+    elif interval == '30m' : 
+        url = "https://api.upbit.com/v1/candles/minutes/30"
+    elif interval == '60m' : 
+        url = "https://api.upbit.com/v1/candles/minutes/60"
+    elif interval == '240m' : 
+        url = "https://api.upbit.com/v1/candles/minutes/240"
+    elif interval == '1d' : 
+        url = "https://api.upbit.com/v1/candles/days"
+    elif interval == '1w' : 
+        url = "https://api.upbit.com/v1/candles/weeks"
+    return url
