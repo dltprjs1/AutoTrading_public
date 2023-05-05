@@ -1,0 +1,337 @@
+import tkinter as tk
+import tkinter.font
+from tkinter import ttk
+import Trading_GUI
+import pyupbit
+import pandas as pd
+import time
+import requests
+import Database
+
+# 옵션창(Purchase)
+def Option(ak,sk,MY_Ip) : 
+    ########################################################################################################################################################################
+    global Access_Key
+    global Secret_key
+    global root
+    global MY_IP
+    MY_IP = MY_Ip
+    Access_Key = ak
+    Secret_key = sk
+    
+    root = tk.Tk()
+    root.title("Option")
+    root.geometry("655x866+600+70")
+    font2=tkinter.font.Font(family="Segoe UI", size=12, weight="bold")
+    font3=tkinter.font.Font(family="Segoe UI", size=15, weight="bold")
+    font4=tkinter.font.Font(family="Segoe UI", size=20, weight="bold")
+    ########################################################################################################################################################################
+    
+    ########################################################################################################################################################################
+    Option = tk.Label(root, text="Option", font=font4)
+    Option.place(x=30,y=30)
+    ########################################################################################################################################################################
+
+    ########################################################################################################################################################################
+    Previous = tk.Checkbutton(root, text="Previous",font=font2)
+    Previous.place(x=150,y=40)
+    ########################################################################################################################################################################
+
+    ########################################################################################################################################################################
+    Save = tk.Button(root, text="Save",width=13,font=("Helvetica", 16),command=re_stoch)
+    Save.place(x=440,y=30)
+    ########################################################################################################################################################################
+
+    ########################################################################################################################################################################
+    Available_Coin = tk.Label(root, text="Available_Coin", font=font3)
+    Available_Coin.place(x=360,y=110)
+
+    Stochastic_1 = tk.Label(root, text="Stochastic", font=font3)
+    Stochastic_1.place(x=40,y=430)
+
+    Stochastic_2 = tk.Label(root, text="Stochastic", font=font3)
+    Stochastic_2.place(x=930,y=230)
+
+    RSI = tk.Label(root, text="RSI", font=font3)
+    RSI.place(x=40,y=650)
+    ########################################################################################################################################################################
+
+    ########################################################################################################################################################################
+    listbox = tk.Listbox(root,width=25,height=15)
+    listbox.place(x=360,y=150)
+    
+    # Available coin list박스에 모든 코인 담기
+    tickers = pyupbit.get_tickers(fiat='KRW',is_details=True)
+    for symbol in tickers :     
+        if symbol['market_warning'] == 'NONE' :
+            pass
+            url = "https://api.upbit.com/v1/candles/minutes/5"
+            querystring = {"market":symbol['market'],"count":"500"}
+            response = requests.request("GET", url, params=querystring)
+            data = response.json()
+            df = pd.DataFrame(data)
+            df1=df.iloc[::-1]
+            df1=df1['trade_price']
+            df=df.reindex(index=df.index[::-1]).reset_index()
+            df['close']=df["trade_price"]   
+            
+            # 유의종목 제하고 모든 코인 Trading_Available 리스트에 추가
+            listbox.insert('end', symbol['market'])
+            time.sleep(0.1)
+    ########################################################################################################################################################################
+
+    ########################################################################################################################################################################
+    Interval_1 = tk.Label(root, text="Interval", font=font2)
+    Interval_1.place(x=40,y=130)
+
+    P_term = tk.Label(root, text="P_term", font=font2)
+    P_term.place(x=40,y=185)
+
+    Amount = tk.Label(root, text="Amount", font=font2)
+    Amount.place(x=40,y=240)
+    
+    Retry = tk.Label(root, text="Retry", font=font2)
+    Retry.place(x=40,y=298)
+    
+    Precondition = tk.Label(root, text="Precondition", font=font2)
+    Precondition.place(x=20,y=348)
+    ########################################################################################################################################################################
+    Length_st_1 = tk.Label(root, text="Length", font=font2)
+    Length_st_1.place(x=40,y=480)
+
+    Limit_st_1 = tk.Label(root, text="Limit", font=font2)
+    Limit_st_1.place(x=350,y=480)
+
+    MinGap_st_1 = tk.Label(root, text="MinGap", font=font2)
+    MinGap_st_1.place(x=350,y=530)
+
+    K_st_1 = tk.Label(root, text="K%", font=font2)
+    K_st_1.place(x=40,y=530)
+
+    D_st_1 = tk.Label(root, text="D%", font=font2)
+    D_st_1.place(x=40,y=580)
+    ########################################################################################################################################################################
+    Length_r_1 = tk.Label(root, text="Length", font=font2)
+    Length_r_1.place(x=40,y=700)
+
+    purchase_Line_r_1 = tk.Label(root, text="P_Line", font=font2)
+    purchase_Line_r_1.place(x=350,y=700)
+
+    Process_r_1 = tk.Label(root, text="Process", font=font2)
+    Process_r_1.place(x=350,y=750)
+
+    K_r_1 = tk.Label(root, text="K%", font=font2)
+    K_r_1.place(x=40,y=750)
+
+    D_r_1 = tk.Label(root, text="D%", font=font2)
+    D_r_1.place(x=40,y=800)
+    ########################################################################################################################################################################
+
+    ########################################################################################################################################################################
+    Warning = tk.Checkbutton(root, text="Warning",font=font2)
+    Warning.place(x=550,y=140)
+
+    Ripple = tk.Checkbutton(root, text="Ripple",font=font2)
+    Ripple.place(x=550,y=190)
+
+    Doge = tk.Checkbutton(root, text="Doge",font=font2)
+    Doge.place(x=550,y=240)
+
+    Volume = tk.Checkbutton(root, text="Volume",font=font2)
+    Volume.place(x=550,y=290)
+    
+    Increase = tk.Checkbutton(root, text="Increase",font=font2)
+    Increase.place(x=550,y=340)
+    ########################################################################################################################################################################
+    
+    ########################################################################################################################################################################
+    global combobox_1
+    combobox_1 = ttk.Combobox(root, values=["3m", "5m","15m", "30m", "60m","240m", "1d", "1w"],width=13,font=("Helvetica", 16))
+    combobox_1.current(0)  # 디폴트 선택값 설정
+    combobox_1.place(x=140,y=130)
+
+    global entry_Purchase
+    entry_Purchase = tk.Entry(root,width=15,font=("Helvetica", 16))
+    entry_Purchase.place(x=140,y=180)
+
+    global entry_Amount
+    entry_Amount = tk.Entry(root,width=15,font=("Helvetica", 16))
+    entry_Amount.place(x=140,y=240)
+    
+    global entry_Retry
+    entry_Retry = tk.Entry(root,width=15,font=("Helvetica", 16))
+    entry_Retry.place(x=140,y=300)
+    
+    global entry_Precondition
+    entry_Precondition = tk.Entry(root,width=15,font=("Helvetica", 16))
+    entry_Precondition.place(x=140,y=350)
+    ########################################################################################################################################################################
+    global entry_Length_st_1
+    entry_Length_st_1 = tk.Entry(root,width=15,font=("Helvetica", 16))
+    entry_Length_st_1.place(x=130,y=480)
+
+    global entry_K_st_1
+    entry_K_st_1 = tk.Entry(root,width=15,font=("Helvetica", 16))
+    entry_K_st_1.place(x=130,y=530)
+
+    global entry_D_st_1
+    entry_D_st_1 = tk.Entry(root,width=15,font=("Helvetica", 16))
+    entry_D_st_1.place(x=130,y=580)
+    
+    global entry_Limit_st_1
+    entry_Limit_st_1 = tk.Entry(root,width=15,font=("Helvetica", 16))
+    entry_Limit_st_1.place(x=440,y=480)
+
+    global entry_MinGap_st_1
+    entry_MinGap_st_1 = tk.Entry(root,width=15,font=("Helvetica", 16))
+    entry_MinGap_st_1.place(x=440,y=530)
+    ########################################################################################################################################################################
+    global entry_Length_r_1
+    entry_Length_r_1 = tk.Entry(root,width=15,font=("Helvetica", 16))
+    entry_Length_r_1.place(x=130,y=700)
+
+    global entry_P_Line_r_1
+    entry_P_Line_r_1 = tk.Entry(root,width=15,font=("Helvetica", 16))
+    entry_P_Line_r_1.place(x=440,y=700)
+
+    global entry_Process_r_1
+    entry_Process_r_1 = tk.Entry(root,width=15,font=("Helvetica", 16))
+    entry_Process_r_1.place(x=440,y=750)
+
+    global entry_K_r_1
+    entry_K_r_1 = tk.Entry(root,width=15,font=("Helvetica", 16))
+    entry_K_r_1.place(x=130,y=750)
+
+    global entry_D_r_1
+    entry_D_r_1 = tk.Entry(root,width=15,font=("Helvetica", 16))
+    entry_D_r_1.place(x=130,y=800)
+    ######################################################################################################################################################################## 
+    root.mainloop()
+
+def re_stoch():
+    global purchase_update
+    purchase_update = 1
+    retry = int(entry_Precondition.get())
+    if retry > 5 : 
+        root.destroy()
+        alert()
+    for i in range(int(retry)):
+        Repurchase()
+
+########################ALERT###############################################################################################################################################
+def alert():
+    alert=tkinter.Tk()                                                     
+    alert.title("Alert")                                                   
+    alert.geometry("300x70+823+400")                                      
+    alert.resizable(False, False)
+    Id=tkinter.Label(alert, text="추가매수 조건을 5번이상 설정할 수 없습니다.", width=40, height=3)
+    Id.place(x=12, y=7)
+    alert.mainloop()
+############################################################################################################################################################################
+  
+# 옵션창2(Repurchase Condition)           
+def Repurchase(): 
+    #######################DB연동 및 매수조건 저장###########################################################################################################################
+    global purchase_update
+    global repurchase_update
+    global precondition
+    if purchase_update == 1:
+        precondition = int(entry_Precondition.get())                        # stochastic_repuchase 창 몇번 띄울지 정하는 변수
+        conn = Database.DB_Connection('AUTOCONDITION')
+        sql = 'UPDATE CONDITION SET INTERVAL=%s ,PURCHASE=%d ,AMOUNT=%d, RETRY=%d, PRECONDITION=%d, LENTH_ST=%d, K_ST=%d, D_ST=%d, LIMIT_ST=%d, MINGAP_ST=%d, LENTH_R=%d, P_LINE_R=%d, PROCESS_R=%d, K_R=%d, D_R=%d WHERE IP = %d'
+        values = (combobox_1.get(),entry_Purchase.get(),entry_Amount.get(),entry_Retry.get(),precondition,entry_Length_st_1.get(),entry_K_st_1.get(),entry_D_st_1.get(),entry_Limit_st_1.get(),entry_MinGap_st_1.get(),entry_Length_r_1.get(),entry_P_Line_r_1.get(),entry_Process_r_1.get(),entry_K_r_1.get(),entry_D_r_1.get(),MY_IP)
+        Database.DB_Execute(conn,sql,values)
+        Database.DB_CC(conn)
+        root.destroy()
+        purchase_update = 0
+        repurchase_update = 1
+    ########################################################################################################################################################################
+    
+    ########################################################################################################################################################################\
+    global Repurchase_t
+    Repurchase_t = tk.Tk()
+    Repurchase_t.title("Repurchase")
+    Repurchase_t.geometry("680x375+600+70")
+    font2=tkinter.font.Font(family="Segoe UI", size=12, weight="bold")
+    ########################################################################################################################################################################
+    
+    ########################################################################################################################################################################
+    Length_st_2 = tk.Label(Repurchase_t, text="Length", font=font2)
+    Length_st_2.place(x=50,y=70)
+
+    K_st_2 = tk.Label(Repurchase_t, text="K%", font=font2)
+    K_st_2.place(x=50,y=120)
+
+    D_st_2 = tk.Label(Repurchase_t, text="D%", font=font2)
+    D_st_2.place(x=50,y=170)
+
+    MinGap_st_2 = tk.Label(Repurchase_t, text="MinGap", font=font2)
+    MinGap_st_2.place(x=360,y=120)
+    
+    Limit_st_2 = tk.Label(Repurchase_t, text="Limit", font=font2)
+    Limit_st_2.place(x=360,y=70)
+    
+    Lower_Than = tk.Label(Repurchase_t, text="Lower Than", font=font2)
+    Lower_Than.place(x=360,y=170)
+    
+    Interval = tk.Label(Repurchase_t, text="Interval", font=font2)
+    Interval.place(x=200,y=240)
+    ########################################################################################################################################################################
+    
+    ########################################################################################################################################################################
+    global entry_Length_st_2
+    entry_Length_st_2 = tk.Entry(Repurchase_t,width=15,font=("Helvetica", 16))
+    entry_Length_st_2.place(x=140,y=70)
+    
+    global entry_K_st_2
+    entry_K_st_2 = tk.Entry(Repurchase_t,width=15,font=("Helvetica", 16))
+    entry_K_st_2.place(x=140,y=120)
+
+    global entry_D_st_2
+    entry_D_st_2 = tk.Entry(Repurchase_t,width=15,font=("Helvetica", 16))
+    entry_D_st_2.place(x=140,y=170)
+
+    global entry_Limit_st_2
+    entry_Limit_st_2 = tk.Entry(Repurchase_t,width=15,font=("Helvetica", 16))
+    entry_Limit_st_2.place(x=450,y=70)
+
+    global entry_MinGap_st_2
+    entry_MinGap_st_2 = tk.Entry(Repurchase_t,width=15,font=("Helvetica", 16))
+    entry_MinGap_st_2.place(x=450,y=120)
+    
+    global entry_Lower_Than_st_2
+    entry_Lower_Than_st_2 = tk.Entry(Repurchase_t,width=15,font=("Helvetica", 16))
+    entry_Lower_Than_st_2.place(x=450,y=170)
+    
+    global combobox_2
+    combobox_2 = ttk.Combobox(Repurchase_t, values=["1m", "3m", "5m","15m", "30m", "60m","240m", "1d", "1w"],width=13,font=("Helvetica", 16))
+    combobox_2.current(0)  # 디폴트 선택값 설정
+    combobox_2.place(x=310,y=240)
+    ########################################################################################################################################################################
+    
+    ########################################################################################################################################################################
+    Save = tk.Button(Repurchase_t, text="Save",width=13,font=("Helvetica", 16),command=repurchase_condition)
+    Save.place(x=270,y=310)
+    ########################################################################################################################################################################
+    Repurchase_t.mainloop()
+
+########################################################################################################################################################################
+def repurchase_condition():
+    global Access_Key
+    global Secret_key
+    global precondition
+    global server
+    if precondition > 0:
+        print(precondition)
+        conn = Database.DB_Connection('AUTOCONDITION')
+        sql = 'UPDATE REPURCHASE_CONDITION_%d SET LENGTH=%d,K=%d,D=%d,LIMIT=%d,MINGAP=%d,LOWER_THAN=%d,INTERVAL=%s WHERE SERVER = %d'
+        values = (6-precondition,entry_Length_st_2.get(),entry_K_st_2.get(),entry_D_st_2.get(),entry_Limit_st_2.get(),entry_MinGap_st_2.get(),entry_Lower_Than_st_2.get(),combobox_2.get(),MY_IP)
+        Database.DB_Execute(conn,sql,values)
+        Database.DB_CC(conn)
+        precondition = precondition - 1
+        if precondition == 0:
+            Repurchase_t.destroy()
+            Trading_GUI.Trade(Access_Key,Secret_key,MY_IP)
+        else :
+            Repurchase_t.destroy()
+########################################################################################################################################################################
