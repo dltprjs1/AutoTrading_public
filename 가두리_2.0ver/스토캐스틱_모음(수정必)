@@ -1,0 +1,329 @@
+import pyupbit
+import pandas as pd
+import numpy as np
+import requests
+
+def stochastic_3 () :
+    url = "https://api.upbit.com/v1/candles/minutes/3"
+    querystring = {"market":"KRW-BTC","count":"100"}
+    response = requests.request("GET", url, params=querystring)
+    data = response.json()
+
+    period=14
+    smoothK=5
+    smoothD=5
+
+    df = pd.DataFrame(data)
+    series=df['trade_price'].iloc[::-1]
+    df = pd.Series(df['trade_price'].values)
+    delta = series.diff().dropna()
+    ups = delta * 0
+    downs = ups.copy()
+    ups[delta > 0] = delta[delta > 0]
+    downs[delta < 0] = -delta[delta < 0]
+    ups[ups.index[period-1]] = np.mean( ups[:period] )
+    ups = ups.drop(ups.index[:(period-1)])
+    downs[downs.index[period-1]] = np.mean( downs[:period] )
+    downs = downs.drop(downs.index[:(period-1)])
+    rs = ups.ewm(com=period-1,min_periods=0,adjust=False,ignore_na=False).mean()
+    downs.ewm(com=period-1,min_periods=0,adjust=False,ignore_na=False).mean() 
+    rsi = 100 - 100 / (1 + rs)
+
+    stochrsi  = (rsi - rsi.rolling(period).min()) / (rsi.rolling(period).max() - rsi.rolling(period).min())
+    stochrsi_K = stochrsi.rolling(smoothK).mean()
+    stochrsi_D = stochrsi_K.rolling(smoothD).mean()
+
+    stochrsi_K = stochrsi_K.iloc[-1]*100 
+    stochrsi_D = stochrsi_D.iloc[-1]*100
+    return stochrsi_K > stochrsi_D , stochrsi_K , stochrsi_D
+
+def stochastic_5 () :
+    url = "https://api.upbit.com/v1/candles/minutes/5"
+    querystring = {"market":"KRW-BTC","count":"100"}
+    response = requests.request("GET", url, params=querystring)
+    data = response.json()
+
+    period=14
+    smoothK=5
+    smoothD=5
+
+    df = pd.DataFrame(data)
+    series=df['trade_price'].iloc[::-1]
+    df = pd.Series(df['trade_price'].values)
+    delta = series.diff().dropna()
+    ups = delta * 0
+    downs = ups.copy()
+    ups[delta > 0] = delta[delta > 0]
+    downs[delta < 0] = -delta[delta < 0]
+    ups[ups.index[period-1]] = np.mean( ups[:period] )
+    ups = ups.drop(ups.index[:(period-1)])
+    downs[downs.index[period-1]] = np.mean( downs[:period] )
+    downs = downs.drop(downs.index[:(period-1)])
+    rs = ups.ewm(com=period-1,min_periods=0,adjust=False,ignore_na=False).mean()
+    downs.ewm(com=period-1,min_periods=0,adjust=False,ignore_na=False).mean() 
+    rsi = 100 - 100 / (1 + rs)
+
+    stochrsi  = (rsi - rsi.rolling(period).min()) / (rsi.rolling(period).max() - rsi.rolling(period).min())
+    stochrsi_K = stochrsi.rolling(smoothK).mean()
+    stochrsi_D = stochrsi_K.rolling(smoothD).mean()
+
+    stochrsi_K = stochrsi_K.iloc[-1]*100 
+    stochrsi_D = stochrsi_D.iloc[-1]*100
+    return stochrsi_K > stochrsi_D , stochrsi_K , stochrsi_D
+
+def stochastic_10 () :
+    url = "https://api.upbit.com/v1/candles/minutes/10"
+    querystring = {"market":"KRW-BTC","count":"100"}
+    response = requests.request("GET", url, params=querystring)
+    data = response.json()
+
+    period=14
+    smoothK=5
+    smoothD=5
+
+    df = pd.DataFrame(data)
+    series=df['trade_price'].iloc[::-1]
+    df = pd.Series(df['trade_price'].values)
+    delta = series.diff().dropna()
+    ups = delta * 0
+    downs = ups.copy()
+    ups[delta > 0] = delta[delta > 0]
+    downs[delta < 0] = -delta[delta < 0]
+    ups[ups.index[period-1]] = np.mean( ups[:period] )
+    ups = ups.drop(ups.index[:(period-1)])
+    downs[downs.index[period-1]] = np.mean( downs[:period] )
+    downs = downs.drop(downs.index[:(period-1)])
+    rs = ups.ewm(com=period-1,min_periods=0,adjust=False,ignore_na=False).mean()
+    downs.ewm(com=period-1,min_periods=0,adjust=False,ignore_na=False).mean() 
+    rsi = 100 - 100 / (1 + rs)
+
+    stochrsi  = (rsi - rsi.rolling(period).min()) / (rsi.rolling(period).max() - rsi.rolling(period).min())
+    stochrsi_K = stochrsi.rolling(smoothK).mean()
+    stochrsi_D = stochrsi_K.rolling(smoothD).mean()
+
+    stochrsi_K = stochrsi_K.iloc[-1]*100 
+    stochrsi_D = stochrsi_D.iloc[-1]*100
+    return stochrsi_K > stochrsi_D , stochrsi_K , stochrsi_D
+
+def stochastic_15 () :
+    url = "https://api.upbit.com/v1/candles/minutes/15"
+    querystring = {"market":"KRW-BTC","count":"100"}
+    response = requests.request("GET", url, params=querystring)
+    data = response.json()
+
+    period=14
+    smoothK=5
+    smoothD=5
+
+    df = pd.DataFrame(data)
+    series=df['trade_price'].iloc[::-1]
+    df = pd.Series(df['trade_price'].values)
+    delta = series.diff().dropna()
+    ups = delta * 0
+    downs = ups.copy()
+    ups[delta > 0] = delta[delta > 0]
+    downs[delta < 0] = -delta[delta < 0]
+    ups[ups.index[period-1]] = np.mean( ups[:period] )
+    ups = ups.drop(ups.index[:(period-1)])
+    downs[downs.index[period-1]] = np.mean( downs[:period] )
+    downs = downs.drop(downs.index[:(period-1)])
+    rs = ups.ewm(com=period-1,min_periods=0,adjust=False,ignore_na=False).mean()
+    downs.ewm(com=period-1,min_periods=0,adjust=False,ignore_na=False).mean() 
+    rsi = 100 - 100 / (1 + rs)
+
+    stochrsi  = (rsi - rsi.rolling(period).min()) / (rsi.rolling(period).max() - rsi.rolling(period).min())
+    stochrsi_K = stochrsi.rolling(smoothK).mean()
+    stochrsi_D = stochrsi_K.rolling(smoothD).mean()
+
+    stochrsi_K = stochrsi_K.iloc[-1]*100 
+    stochrsi_D = stochrsi_D.iloc[-1]*100
+    return stochrsi_K > stochrsi_D , stochrsi_K , stochrsi_D
+
+def stochastic_30 () :
+    url = "https://api.upbit.com/v1/candles/minutes/30"
+    querystring = {"market":"KRW-BTC","count":"100"}
+    response = requests.request("GET", url, params=querystring)
+    data = response.json()
+
+    period=14
+    smoothK=5
+    smoothD=5
+
+    df = pd.DataFrame(data)
+    series=df['trade_price'].iloc[::-1]
+    df = pd.Series(df['trade_price'].values)
+    delta = series.diff().dropna()
+    ups = delta * 0
+    downs = ups.copy()
+    ups[delta > 0] = delta[delta > 0]
+    downs[delta < 0] = -delta[delta < 0]
+    ups[ups.index[period-1]] = np.mean( ups[:period] )
+    ups = ups.drop(ups.index[:(period-1)])
+    downs[downs.index[period-1]] = np.mean( downs[:period] )
+    downs = downs.drop(downs.index[:(period-1)])
+    rs = ups.ewm(com=period-1,min_periods=0,adjust=False,ignore_na=False).mean()
+    downs.ewm(com=period-1,min_periods=0,adjust=False,ignore_na=False).mean() 
+    rsi = 100 - 100 / (1 + rs)
+
+    stochrsi  = (rsi - rsi.rolling(period).min()) / (rsi.rolling(period).max() - rsi.rolling(period).min())
+    stochrsi_K = stochrsi.rolling(smoothK).mean()
+    stochrsi_D = stochrsi_K.rolling(smoothD).mean()
+
+    stochrsi_K = stochrsi_K.iloc[-1]*100 
+    stochrsi_D = stochrsi_D.iloc[-1]*100
+    return stochrsi_K > stochrsi_D , stochrsi_K , stochrsi_D
+
+def stochastic_60 () :
+    url = "https://api.upbit.com/v1/candles/minutes/60"
+    querystring = {"market":"KRW-BTC","count":"100"}
+    response = requests.request("GET", url, params=querystring)
+    data = response.json()
+
+    period=14
+    smoothK=5
+    smoothD=5
+
+    df = pd.DataFrame(data)
+    series=df['trade_price'].iloc[::-1]
+    df = pd.Series(df['trade_price'].values)
+    delta = series.diff().dropna()
+    ups = delta * 0
+    downs = ups.copy()
+    ups[delta > 0] = delta[delta > 0]
+    downs[delta < 0] = -delta[delta < 0]
+    ups[ups.index[period-1]] = np.mean( ups[:period] )
+    ups = ups.drop(ups.index[:(period-1)])
+    downs[downs.index[period-1]] = np.mean( downs[:period] )
+    downs = downs.drop(downs.index[:(period-1)])
+    rs = ups.ewm(com=period-1,min_periods=0,adjust=False,ignore_na=False).mean()
+    downs.ewm(com=period-1,min_periods=0,adjust=False,ignore_na=False).mean() 
+    rsi = 100 - 100 / (1 + rs)
+
+    stochrsi  = (rsi - rsi.rolling(period).min()) / (rsi.rolling(period).max() - rsi.rolling(period).min())
+    stochrsi_K = stochrsi.rolling(smoothK).mean()
+    stochrsi_D = stochrsi_K.rolling(smoothD).mean()
+
+    stochrsi_K = stochrsi_K.iloc[-1]*100 
+    stochrsi_D = stochrsi_D.iloc[-1]*100
+    return stochrsi_K > stochrsi_D , stochrsi_K , stochrsi_D
+
+def stochastic_240() : 
+    url = "https://api.upbit.com/v1/candles/minutes/240"
+    
+    querystring = {"market":"KRW-BTC","count":"100"}
+    
+    response = requests.request("GET", url, params=querystring)
+    
+    data = response.json()
+    
+    df = pd.DataFrame(data)
+    
+    series=df['trade_price'].iloc[::-1]
+    
+    df = pd.Series(df['trade_price'].values)
+    
+
+    period=14
+    smoothK=5
+    smoothD=5
+     
+    delta = series.diff().dropna()
+    ups = delta * 0
+    downs = ups.copy()
+    ups[delta > 0] = delta[delta > 0]
+    downs[delta < 0] = -delta[delta < 0]
+    ups[ups.index[period-1]] = np.mean( ups[:period] )
+    ups = ups.drop(ups.index[:(period-1)])
+    downs[downs.index[period-1]] = np.mean( downs[:period] )
+    downs = downs.drop(downs.index[:(period-1)])
+    rs = ups.ewm(com=period-1,min_periods=0,adjust=False,ignore_na=False).mean() / \
+         downs.ewm(com=period-1,min_periods=0,adjust=False,ignore_na=False).mean() 
+    rsi = 100 - 100 / (1 + rs)
+
+    stochrsi  = (rsi - rsi.rolling(period).min()) / (rsi.rolling(period).max() - rsi.rolling(period).min())
+    stochrsi_K = stochrsi.rolling(smoothK).mean()
+    stochrsi_D = stochrsi_K.rolling(smoothD).mean()
+    
+    return stochrsi_K.iloc[-1]*100 > stochrsi_D.iloc[-1]*100 ,stochrsi_K.iloc[-1]*100, stochrsi_D.iloc[-1]*100
+    
+def stochastic_day() : 
+    url = "https://api.upbit.com/v1/candles/days"
+    
+    querystring = {"market":"KRW-BTC","count":"100"}
+    
+    response = requests.request("GET", url, params=querystring)
+    
+    data = response.json()
+    
+    df = pd.DataFrame(data)
+    
+    series=df['trade_price'].iloc[::-1]
+    
+    df = pd.Series(df['trade_price'].values)
+    
+
+    period=14
+    smoothK=5
+    smoothD=5
+     
+    delta = series.diff().dropna()
+    ups = delta * 0
+    downs = ups.copy()
+    ups[delta > 0] = delta[delta > 0]
+    downs[delta < 0] = -delta[delta < 0]
+    ups[ups.index[period-1]] = np.mean( ups[:period] )
+    ups = ups.drop(ups.index[:(period-1)])
+    downs[downs.index[period-1]] = np.mean( downs[:period] )
+    downs = downs.drop(downs.index[:(period-1)])
+    rs = ups.ewm(com=period-1,min_periods=0,adjust=False,ignore_na=False).mean() / \
+         downs.ewm(com=period-1,min_periods=0,adjust=False,ignore_na=False).mean() 
+    rsi = 100 - 100 / (1 + rs)
+
+    stochrsi  = (rsi - rsi.rolling(period).min()) / (rsi.rolling(period).max() - rsi.rolling(period).min())
+    stochrsi_K = stochrsi.rolling(smoothK).mean()
+    stochrsi_D = stochrsi_K.rolling(smoothD).mean()
+    
+    return stochrsi_K.iloc[-1]*100 > stochrsi_D.iloc[-1]*100 ,stochrsi_K.iloc[-1]*100, stochrsi_D.iloc[-1]*100
+
+def stochastic_week() : 
+    url = "https://api.upbit.com/v1/candles/weeks"
+    
+    querystring = {"market":"KRW-BTC","count":"100"}
+    
+    response = requests.request("GET", url, params=querystring)
+    
+    data = response.json()
+    
+    df = pd.DataFrame(data)
+    
+    series=df['trade_price'].iloc[::-1]
+    
+    df = pd.Series(df['trade_price'].values)
+    
+
+    period=14
+    smoothK=5
+    smoothD=5
+     
+    delta = series.diff().dropna()
+    ups = delta * 0
+    downs = ups.copy()
+    ups[delta > 0] = delta[delta > 0]
+    downs[delta < 0] = -delta[delta < 0]
+    ups[ups.index[period-1]] = np.mean( ups[:period] )
+    ups = ups.drop(ups.index[:(period-1)])
+    downs[downs.index[period-1]] = np.mean( downs[:period] )
+    downs = downs.drop(downs.index[:(period-1)])
+    rs = ups.ewm(com=period-1,min_periods=0,adjust=False,ignore_na=False).mean() / \
+         downs.ewm(com=period-1,min_periods=0,adjust=False,ignore_na=False).mean() 
+    rsi = 100 - 100 / (1 + rs)
+
+    stochrsi  = (rsi - rsi.rolling(period).min()) / (rsi.rolling(period).max() - rsi.rolling(period).min())
+    stochrsi_K = stochrsi.rolling(smoothK).mean()
+    stochrsi_D = stochrsi_K.rolling(smoothD).mean()
+    
+    return stochrsi_K.iloc[-1]*100 > stochrsi_D.iloc[-1]*100 ,stochrsi_K.iloc[-1]*100, stochrsi_D.iloc[-1]*100
+
+BTC5m = pyupbit.get_ohlcv("KRW-BTC", interval="minute15",count=1)
+BTC5m = BTC5m['open']
+BTC5m = int(BTC5m.iloc[0])
