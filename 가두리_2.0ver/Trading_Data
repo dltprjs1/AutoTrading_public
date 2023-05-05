@@ -1,0 +1,159 @@
+import tkinter
+import tkinter.font
+import tkinter.ttk
+import pyupbit
+import time
+import socket
+import pandas as pd
+import math
+import Database
+
+def balance_info(Trading,AK,SK):
+    access_key = AK
+    secret_key = SK
+    font1=tkinter.font.Font(family="Arial", size=12, weight="bold")
+    
+    TA_ANS_Data = ""
+    ABBL_ANS_Data = ""
+    AAL_ANS_Data = ""
+    PPDL_ANS_Data = ""
+    
+    coin_name_all = ""
+    MY_IP = socket.gethostbyname(socket.gethostname())
+    #####################################################################################################    
+    P_columns = ('Coin Name','Total Profit/Loss', 'Estimated Asset', 'Status')
+    P_list = tkinter.ttk.Treeview(Trading, columns=P_columns, show='headings', height=5)
+    
+    # P_list 열 제목 설정
+    P_list.heading('Coin Name', text='Coin Name')
+    P_list.heading('Total Profit/Loss', text='Total Profit/Loss')
+    P_list.heading('Estimated Asset', text='Estimated Asset')
+    P_list.heading('Status', text='Status')
+    
+    # P_list 각 열의 너비 조정
+    P_list.column('Coin Name', width=125)
+    P_list.column('Total Profit/Loss', width=145)
+    P_list.column('Estimated Asset', width=145)
+    P_list.column('Status', width=125)
+    
+    # P_list 위젯의 너비 조정
+    P_list.columnconfigure(0, weight=1)
+    P_list.columnconfigure(1, weight=1)
+    P_list.columnconfigure(2, weight=1)
+    P_list.columnconfigure(3, weight=1)
+    
+    P_list.place(x=70,y=100)
+    ####################################################################################################
+    H_columns = ('Coin Name', 'Type', 'Transaction Price', 'Amount', 'Profit/Loss')
+    H_list = tkinter.ttk.Treeview(Trading, columns=H_columns, show='headings', height=15)
+    
+    # H_list 열 제목 설정
+    H_list.heading('Coin Name', text='Coin Name')
+    H_list.heading('Type', text='Type')
+    H_list.heading('Transaction Price', text='Transaction Price')
+    H_list.heading('Amount', text='Amount')
+    H_list.heading('Profit/Loss', text='Profit/Loss')
+
+    # H_list 각 열의 너비 조정
+    H_list.column('Coin Name', width=100)
+    H_list.column('Type', width=100)
+    H_list.column('Transaction Price', width=120)
+    H_list.column('Amount', width=120)
+    H_list.column('Profit/Loss', width=100)
+
+    # H_list 위젯의 너비 조정
+    H_list.columnconfigure(0, weight=1)
+    H_list.columnconfigure(1, weight=1)
+    H_list.columnconfigure(2, weight=1)
+    H_list.columnconfigure(3, weight=1)
+    H_list.columnconfigure(4, weight=1)
+    
+    H_list.place(x=70,y=300)
+    ######################################################################################################
+    upbit=pyupbit.Upbit(access_key, secret_key)
+    
+    TA_ANS = tkinter.Label(Trading, text=TA_ANS_Data, font=font1)
+    ABBL_ANS = tkinter.Label(Trading, text=ABBL_ANS_Data, font=font1)
+    AAL_ANS = tkinter.Label(Trading, text=AAL_ANS_Data, font=font1)
+    PPDL_ANS = tkinter.Label(Trading, text=PPDL_ANS_Data, font=font1)
+    TA_ANS.place(x=500,y=680)
+    ABBL_ANS.place(x=500,y=720)
+    AAL_ANS.place(x=500,y=760)
+    PPDL_ANS.place(x=500,y=800)
+    while True :
+        TA_ANS_Data = int(round(upbit.get_amount('ALL')))+int(round(upbit.get_balance(ticker="KRW")))
+        ABBL_ANS_Data = int(round(upbit.get_amount('ALL')))
+        AAL_ANS_Data = int(round(upbit.get_balance(ticker="KRW")))
+        currentcoin = pd.DataFrame(upbit.get_balances())              # 내가 매수한 코인의 정보(df)
+        my_money = float(currentcoin.iloc[0,1]) 
+        for i in range(len(currentcoin)) :
+            i=0
+            avg_coin = float(currentcoin.iloc[i,3])                       
+            avg_coin = math.trunc(avg_coin)            
+            if my_money <  TA_ANS_Data - 100000 :
+                if "KRW-KRW"=='KRW-'+currentcoin.iloc[i,0] :
+                    i+=1
+                    time.sleep(0.5)
+                if "KRW-VTHO" == 'KRW-'+currentcoin.iloc[i,0] :
+                    i+=1
+                    time.sleep(0.5)
+                if "KRW-APENFT"== 'KRW-'+currentcoin.iloc[i,0] :
+                    i+=1
+                    time.sleep(0.5)
+                if "KRW-APENFT"== 'KRW-'+currentcoin.iloc[i,0] :
+                    break
+                if "KRW-VTHO" == 'KRW-'+currentcoin.iloc[i,0] :
+                    break
+                
+                # 내가 매수한 코인 
+                currentcoin = pd.DataFrame(upbit.get_balances())
+                
+                # 내가 산 코인 평균 매수가 구하기
+                coin_name_all = 'KRW-'+currentcoin.iloc[i,0]           # 내가 산 코인 이름
+
+                # 내가 산 코인 갯수 구하기
+                coin_num = upbit.get_balance_t(coin_name_all)
+
+                # 코인 현재 가격 구하기
+                u_coin = pyupbit.get_ohlcv(coin_name_all, interval="minute60",count=1)
+                u_coin = u_coin['close']
+                u_coin = u_coin[0]
+                
+                PPDL_ANS_Data = round(coin_num * u_coin - ABBL_ANS_Data)
+                
+                def present_info():
+                    # 데이터 지우기
+                    P_list.delete(*P_list.get_children())
+                    
+                    # 데이터 추가
+                    data_present = [(coin_name_all, PPDL_ANS_Data, ABBL_ANS_Data, "active")]
+
+                    for i, (coin_name, profit_loss, estimated_asset, status) in enumerate(data_present):
+                        P_list.insert("", 1, text=1, values=(coin_name, profit_loss, estimated_asset, status))
+                
+                present_info()
+            else : 
+                PPDL_ANS_Data = 0
+                
+                def history_save():
+                    if coin_name_all != "" :
+                        data_history = [(coin_name_all, "sell", u_coin, ABBL_ANS_Data, PPDL_ANS_Data)]
+                        for i, d in enumerate(data_history):
+                            H_list.insert("", i, values=d)
+                        
+                        coin_name_all = ""
+                        time.sleep(1)
+                        #################################DB연동 및 거래내역 저장###############################################################################
+                        conn = Database.DB_Connection('AUTOTRADING')
+                        sql = 'INSERT INTO TRANS_INFO VALUSE(COIN_NAME=%s,TYPE=%s,TRANSACTION_PRICE=%d,AMOUNT=%d,PROFIT_LOSS=%d) WHERE IP=%s'
+                        values = (coin_name_all,"sell",u_coin,ABBL_ANS_Data,PPDL_ANS_Data,MY_IP)
+                        Database.DB_Execute(conn,sql,values)
+                        Database.DB_CC(conn)
+                        ######################################################################################################################################
+                        
+                history_save()
+            # 총보유자산, 매수중인 금액, 가용가능 금액, 하루 수익 노출
+            TA_ANS.config(text=TA_ANS_Data)
+            ABBL_ANS.config(text=ABBL_ANS_Data)
+            AAL_ANS.config(text=AAL_ANS_Data)
+            PPDL_ANS.config(text=PPDL_ANS_Data)
