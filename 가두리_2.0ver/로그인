@@ -1,0 +1,108 @@
+import tkinter
+import socket
+import Option_GUI
+import Database
+
+#######################IP 가져오기#################################################################################################
+global MY_IP
+MY_Ip = socket.gethostbyname(socket.gethostname())
+##################################################################################################################################
+
+#######################DB연동 및 로그인 테이블 조회#################################################################################
+conn = Database.DB_Connection('AUTOLogin')
+cursor = Database.DB_Select(conn,'SELECT * FROM login')
+row = cursor.fetchone()
+##################################################################################################################################
+
+#######################프로그램 창 환경설정#########################################################################################
+window=tkinter.Tk()                                                     # 가장 상위 레벨의 윈도우 창을 생성
+window.title("Login")                                                   # 프로젝트 상단 이름
+window.geometry("250x250+800+350")                                      # 윈도우 창의 너비와 높이, 초기 화면 위치의 x좌표와 y좌표를 설정
+window.resizable(False, False)                                          # 윈도우 창의 창 크기 조절 가능 여부 ( True / False)
+text=tkinter.Text(window)
+##################################################################################################################################
+
+#######################로그인######################################################################################################
+# IP가 같은 열의 로그인 정보 가져오기
+while row:
+    if MY_Ip == row[6] :
+        Id_DB = row[2]
+        PassWord_DB = row[3]
+        AccessKey_DB = row[4]
+        SecretKey_DB = row[5]
+        Ip_DB = row[6]
+    row = cursor.fetchone()
+
+# 로그인 후 자동매매 설정창 생성
+def Login():
+    if Id_box.get() == Id_DB:
+        pass
+    else:
+        alert()
+    if PassWord_box.get() == PassWord_DB:
+        pass
+    else:
+        alert()
+    if AccessKey_box.get() == AccessKey_DB:
+        pass
+    else:
+        alert()
+    if SecretKey_box.get() == SecretKey_DB:
+        pass
+    else:
+        alert()
+    if MY_Ip == Ip_DB:
+        window.destroy()
+        conn.close()                                                            # DB연결 끊기
+        # 자동매매 시작
+        Option_GUI.Option(AccessKey_DB,SecretKey_DB,MY_Ip)
+    else:
+        window.destroy()
+        conn.close()                                                            # DB연결 끊기
+#################################################################################################################################
+
+#######################컨테이너 만들기############################################################################################
+# Label 생성
+Id=tkinter.Label(window, text="ID : ", width=3, height=3)               
+PassWord=tkinter.Label(window, text="PassWord : ", width=8, height=3)
+AccessKey=tkinter.Label(window, text="AccessKey : ", width=9, height=3)
+SecretKey=tkinter.Label(window, text="SecretKey : ", width=9, height=3)
+
+# Button 생성
+Login = tkinter.Button(window,text="로그인", overrelief="solid", width=15, repeatdelay=1000, repeatinterval=100, command=Login)
+
+# Message박스 생성
+Id_box=tkinter.Entry(window)
+PassWord_box=tkinter.Entry(window)
+AccessKey_box=tkinter.Entry(window)
+SecretKey_box=tkinter.Entry(window)
+
+# Message박스 설정
+PassWord_box.select_present()
+################################################################################################################################
+
+########################노출#####################################################################################################
+Id.grid(row=1, column=0)                                                # Label 위치(Grid), pack메서드를 사용하지 않아도 노출 가능
+PassWord.grid(row=2, column=0)
+AccessKey.grid(row=3, column=0)
+SecretKey.grid(row=4,column=0)
+Login.place(x=63, y=210)                                                # Button 위치(x좌표 , y좌표)
+Id_box.grid(row=1, column=1)                                            # MessageBox 위치
+PassWord_box.grid(row=2, column=1)
+AccessKey_box.grid(row=3, column=1)
+SecretKey_box.grid(row=4, column=1)
+################################################################################################################################
+
+########################ALERT###################################################################################################
+def alert():
+    alert=tkinter.Tk()                                                     
+    alert.title("Alert")                                                   
+    alert.geometry("200x70+823+400")                                      
+    alert.resizable(False, False)
+    Id=tkinter.Label(alert, text="정보를 다시 입력해 주십시오.", width=25, height=3)
+    Login = tkinter.Button(alert,text="확인", overrelief="solid", width=15, repeatdelay=1000, repeatinterval=100)
+    Id.place(x=12, y=7)
+    window.mainloop()
+################################################################################################################################
+window.mainloop()                                                       # 윈도우이름의 윈도우 창을 윈도우가 종료될 때 까지 실행
+################################################################################################################################
